@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+apply from: "$rootDir/gradle/build_base.gradle"
+apply from: "$rootDir/gradle/build_sdk.gradle"
+
+android {
+    defaultConfig {
+        applicationId "com.htc.vr.samples.wvr_hellovr"
+        versionCode 1
+        versionName "1.0"
+    }
+
+    signingConfigs {
+        debug {}
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    flavorDimensions "version"
+    productFlavors {
+        bit32 {
+            dimension "version"
+            applicationId "com.htc.vr.samples.wvr_hellovr.armv7a"
+            ndk {
+                abiFilter 'armeabi-v7a'
+            }
+        }
+        bit64 {
+            dimension "version"
+            applicationId "com.htc.vr.samples.wvr_hellovr"
+            ndk {
+                abiFilter 'arm64-v8a'
+            }
+        }
+    }
+}
+
+task export(type: Copy) {
+    def SDK_TYPE = System.getenv('HTCVR_SDK_TYPE')
+    if (SDK_TYPE != null) {
+        def buildType = SDK_TYPE.toLowerCase()
+        from("$buildDir/outputs/apk/bit32/${buildType}")
+        into(System.getenv('HTCVR_SDK_APPS'))
+        include("${project.name}-bit32-${buildType}.apk")
+        rename("${project.name}-bit32-${buildType}.apk", "${project.name}.apk")
+    }
+}

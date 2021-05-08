@@ -1,0 +1,10 @@
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 25
+        targetSdkVersion 26
+
+        multiDexEnabled true
+    }
+}
